@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Apuntando el frontend al servidor backend alojado en Render
+const API_URL = 'https://ecosistema-inmobiliario.onrender.com/api';
+
 const api = axios.create({
-    baseURL: import.meta.env.PROD ? '/api' : 'http://localhost:5000/api',
+    baseURL: API_URL,
 });
 
 export const getCompanies = async () => {
