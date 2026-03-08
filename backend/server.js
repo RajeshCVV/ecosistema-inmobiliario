@@ -136,12 +136,12 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-const PORT = process.env.PORT || 5000;
+// Exportar app para Vercel Serverless
 if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`🚀 Servidor backend corriendo en el puerto ${PORT}`);
     });
 }
 
-// Exportar app para Vercel Serverless
 module.exports = app;
