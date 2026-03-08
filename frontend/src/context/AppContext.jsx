@@ -15,7 +15,8 @@ const initialState = {
                 buyerPersonas: [
                     'Empresario Diversificador (42-58 años, ingresos $25M-$80M COP)',
                     'Inversionista Patrimonial (Enfocado en legado y seguridad familiar)'
-                ]
+                ],
+                primaryColor: '#000000'
             },
             projects: [
                 {
@@ -25,20 +26,17 @@ const initialState = {
                     informacion: 'Proyecto de inversión patrimonial de la línea Fortress.',
                     campanasMeta: {
                         reconocimiento: [
-                            { id: 'ca1-rec', nombre: 'Branding y Posicionamiento', formatos: ['Reel', 'Carrusel', 'Post', 'Story'] }
+                            { id: 'ca1-rec', nombre: 'Branding y Posicionamiento', formatos: ['Reel', 'Carrusel', 'Post', 'Story'], status: 'activa' }
                         ],
                         trafico: [
-                            { id: 'ca1-traf', nombre: 'Redirección IG/Landing', formatos: ['Videos del CEO', 'Storytelling de marca'] }
+                            { id: 'ca1-traf', nombre: 'Redirección IG/Landing', formatos: ['Videos del CEO', 'Storytelling de marca'], status: 'pausada' }
                         ],
                         clientesPotenciales: [
-                            { id: 'ca1-lead', nombre: 'Conversión Directa (Leads)', formatos: ['Testimonios', 'Credibilidad técnica'] }
+                            { id: 'ca1-lead', nombre: 'Conversión Directa (Leads)', formatos: ['Testimonios', 'Credibilidad técnica'], status: 'activa' }
                         ]
                     },
                     planner: 'Planeación enfocada a posicionamiento de autoridad.',
-                    estrategia: 'Fase 1: Reconocimiento (Top of Funnel) -> Fase 2: Tráfico (Middle of Funnel) -> Fase 3: Leads (Bottom of Funnel)',
-                    campanasActivas: 'A la espera de activación de parrilla comercial.',
-                    metricas: 'Sin data actual',
-                    crm: 'Desconectado'
+                    estrategia: 'Fase 1: Reconocimiento (Top of Funnel) -> Fase 2: Tráfico (Middle of Funnel) -> Fase 3: Leads (Bottom of Funnel)'
                 },
                 {
                     id: 'p2-fortress',
@@ -46,7 +44,7 @@ const initialState = {
                     status: 'abiertos',
                     informacion: 'Segunda etapa del modelo de protección patrimonial.',
                     campanasMeta: { reconocimiento: [], trafico: [], clientesPotenciales: [] },
-                    planner: '', estrategia: '', campanasActivas: '', metricas: '', crm: ''
+                    planner: '', estrategia: ''
                 },
                 {
                     id: 'p3-fortress',
@@ -54,7 +52,7 @@ const initialState = {
                     status: 'en_curso',
                     informacion: 'Tercera etapa en estructuración formal.',
                     campanasMeta: { reconocimiento: [], trafico: [], clientesPotenciales: [] },
-                    planner: '', estrategia: '', campanasActivas: '', metricas: '', crm: ''
+                    planner: '', estrategia: ''
                 }
             ]
         },
@@ -71,7 +69,8 @@ const initialState = {
                 buyerPersonas: [
                     'Inversionista de Locales (35-60 años, busca renta pasiva y valorización)',
                     'Comerciante Expansivo (Dueños de marcas/franquicias que buscan ubicaciones estratégicas)'
-                ]
+                ],
+                primaryColor: '#e11d48'
             },
             projects: [
                 {
@@ -81,90 +80,231 @@ const initialState = {
                     informacion: 'Centro comercial del sur de Jamundí conectado a parque lineal. Sin competencia en el entorno.',
                     campanasMeta: {
                         reconocimiento: [
-                            { id: 'ca1-rec-c', nombre: 'Awareness del Boulevard', formatos: ['Reel "Ciudad Viva"', 'Carrusel Proyecto', 'Post', 'Story'] }
+                            { id: 'ca1-rec-c', nombre: 'Awareness del Boulevard', formatos: ['Reel "Ciudad Viva"', 'Carrusel Proyecto', 'Post', 'Story'], status: 'activa' }
                         ],
                         trafico: [
-                            { id: 'ca1-traf-c', nombre: 'Redirección a Comunidad', formatos: ['Avances de Obra', 'Lifestyle del sector'] }
+                            { id: 'ca1-traf-c', nombre: 'Redirección a Comunidad', formatos: ['Avances de Obra', 'Lifestyle del sector'], status: 'activa' }
                         ],
                         clientesPotenciales: [
-                            { id: 'ca1-lead-c', nombre: 'Venta de Locales', formatos: ['Valorización m2', 'Formulario nativo'] }
+                            { id: 'ca1-lead-c', nombre: 'Venta de Locales', formatos: ['Valorización m2', 'Formulario nativo'], status: 'pausada' }
                         ]
                     },
                     planner: 'Elaborar línea gráfica "Ciudad Viva".',
-                    estrategia: 'Fase 1: Reconocimiento (Top of Funnel) -> Fase 2: Tráfico (Middle of Funnel) -> Fase 3: Leads (Bottom of Funnel)',
-                    campanasActivas: 'Estructurando pauta publicitaria.',
-                    metricas: 'Sin data actual',
-                    crm: 'Desconectado'
+                    estrategia: 'Fase 1: Reconocimiento (Top of Funnel) -> Fase 2: Tráfico (Middle of Funnel) -> Fase 3: Leads (Bottom of Funnel)'
                 }
             ]
         }
+    ],
+    leads: [
+        { id: 'lead-1', projectId: 'p1-creciendo', name: 'Carlos Rendón', phone: '+57 300 123 4567', email: 'carlos@ejemplo.com', stage: 'nuevo', notes: 'Interesado en local comercial esquinero de 40m2.', date: '2023-10-01' },
+        { id: 'lead-2', projectId: 'p1-creciendo', name: 'Laura Gómez', phone: '+57 310 987 6543', email: 'laura@ejemplo.com', stage: 'contactado', notes: 'Desea poner una sucursal de su franquicia.', date: '2023-10-02' },
+        { id: 'lead-3', projectId: 'p1-fortress', name: 'Dr. Arturo Vélez', phone: '+57 315 444 5555', email: 'arturo@ejemplo.com', stage: 'cita', notes: 'Busca protección patrimonial, inversión de $500M COP iniciales.', date: '2023-10-03' }
     ]
 };
 
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    // Inicializar desde LocalStorage o usar el estado semilla
+    // Inicializar desde LocalStorage o usar el estado semilla (Forzamos reset temporal para asimilar nueva BD)
     const [data, setData] = useState(() => {
-        // En esta actualización forzamos cargar la SIEMPRE data nueva porque el JSON semilla acaba de mutar
-        // Para que en el equipo del usuario resplandezca la información de Miro de inmediato, sobreescribimos.
-        return initialState;
+        // En Producción V2, si ya hay datos de v2, mantenerlos. Si no, usar initialState.
+        const localData = localStorage.getItem('v2_growth_os_data');
+        return localData ? JSON.parse(localData) : initialState;
     });
 
-    // Guardar en LocalStorage cada vez que cambie `data`
     useEffect(() => {
-        localStorage.setItem('ecosistema_inmobiliario_data', JSON.stringify(data));
+        localStorage.setItem('v2_growth_os_data', JSON.stringify(data));
     }, [data]);
 
-    // Update Company General Info (Branding)
-    const updateCompany = (companyId, newCompanyData) => {
-        setData(prevData => {
-            const updatedCompanies = prevData.companies.map(c =>
-                c.id === companyId ? { ...c, ...newCompanyData } : c
-            );
-            return { ...prevData, companies: updatedCompanies };
-        });
+    // ==========================================
+    // CRUD: COMPANIES
+    // ==========================================
+    const addCompany = (company) => {
+        setData(prev => ({ ...prev, companies: [...prev.companies, company] }));
     };
 
-    // Update specific string arrays in branding (like buyerPersonas)
-    const updateBrandingArray = (companyId, field, newArray) => {
-        setData(prevData => {
-            return {
-                ...prevData,
-                companies: prevData.companies.map(c => {
-                    if (c.id === companyId) {
-                        return {
-                            ...c,
-                            branding: {
-                                ...c.branding,
-                                [field]: newArray
-                            }
-                        }
-                    }
-                    return c;
-                })
-            }
-        });
-    }
+    const updateCompany = (companyId, newCompanyData) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => c.id === companyId ? { ...c, ...newCompanyData } : c)
+        }));
+    };
 
-    // Update Specific Project inside a Company
+    const deleteCompany = (companyId) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.filter(c => c.id !== companyId)
+        }));
+    };
+
+    const updateBrandingArray = (companyId, field, newArray) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    return { ...c, branding: { ...c.branding, [field]: newArray } };
+                }
+                return c;
+            })
+        }));
+    };
+
+    // ==========================================
+    // CRUD: PROJECTS
+    // ==========================================
+    const addProject = (companyId, project) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    return { ...c, projects: [...c.projects, project] };
+                }
+                return c;
+            })
+        }));
+    };
+
     const updateProject = (companyId, projectId, newProjectData) => {
-        setData(prevData => {
-            const updatedCompanies = prevData.companies.map(company => {
-                if (company.id === companyId) {
-                    const updatedProjects = company.projects.map(p =>
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    const updatedProjects = c.projects.map(p =>
                         p.id === projectId ? { ...p, ...newProjectData } : p
                     );
-                    return { ...company, projects: updatedProjects };
+                    return { ...c, projects: updatedProjects };
                 }
-                return company;
-            });
-            return { ...prevData, companies: updatedCompanies };
-        });
+                return c;
+            })
+        }));
+    };
+
+    const deleteProject = (companyId, projectId) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    return { ...c, projects: c.projects.filter(p => p.id !== projectId) };
+                }
+                return c;
+            })
+        }));
+    };
+
+    // ==========================================
+    // CRUD: META ADS
+    // ==========================================
+    const addAdSet = (companyId, projectId, funnelStage, adSet) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    const upProj = c.projects.map(p => {
+                        if (p.id === projectId) {
+                            return {
+                                ...p,
+                                campanasMeta: {
+                                    ...p.campanasMeta,
+                                    [funnelStage]: [...p.campanasMeta[funnelStage], adSet]
+                                }
+                            };
+                        }
+                        return p;
+                    });
+                    return { ...c, projects: upProj };
+                }
+                return c;
+            })
+        }));
+    };
+
+    const toggleAdSetStatus = (companyId, projectId, funnelStage, adSetId) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    const upProj = c.projects.map(p => {
+                        if (p.id === projectId) {
+                            const updatedAdSets = p.campanasMeta[funnelStage].map(ad =>
+                                ad.id === adSetId ? { ...ad, status: ad.status === 'activa' ? 'pausada' : 'activa' } : ad
+                            );
+                            return {
+                                ...p,
+                                campanasMeta: {
+                                    ...p.campanasMeta,
+                                    [funnelStage]: updatedAdSets
+                                }
+                            };
+                        }
+                        return p;
+                    });
+                    return { ...c, projects: upProj };
+                }
+                return c;
+            })
+        }));
+    };
+
+    const deleteAdSet = (companyId, projectId, funnelStage, adSetId) => {
+        setData(prev => ({
+            ...prev,
+            companies: prev.companies.map(c => {
+                if (c.id === companyId) {
+                    const upProj = c.projects.map(p => {
+                        if (p.id === projectId) {
+                            return {
+                                ...p,
+                                campanasMeta: {
+                                    ...p.campanasMeta,
+                                    [funnelStage]: p.campanasMeta[funnelStage].filter(ad => ad.id !== adSetId)
+                                }
+                            };
+                        }
+                        return p;
+                    });
+                    return { ...c, projects: upProj };
+                }
+                return c;
+            })
+        }));
+    };
+
+    // ==========================================
+    // CRUD: LEADS (CRM)
+    // ==========================================
+    const addLead = (lead) => {
+        setData(prev => ({ ...prev, leads: [...prev.leads, lead] }));
+    };
+
+    const updateLead = (leadId, newLeadData) => {
+        setData(prev => ({
+            ...prev,
+            leads: prev.leads.map(l => l.id === leadId ? { ...l, ...newLeadData } : l)
+        }));
+    };
+
+    const deleteLead = (leadId) => {
+        setData(prev => ({
+            ...prev,
+            leads: prev.leads.filter(l => l.id !== leadId)
+        }));
+    };
+
+    const moveLeadStage = (leadId, newStage) => {
+        setData(prev => ({
+            ...prev,
+            leads: prev.leads.map(l => l.id === leadId ? { ...l, stage: newStage } : l)
+        }));
     };
 
     return (
-        <AppContext.Provider value={{ data, updateCompany, updateProject, updateBrandingArray }}>
+        <AppContext.Provider value={{
+            data,
+            addCompany, updateCompany, deleteCompany, updateBrandingArray,
+            addProject, updateProject, deleteProject,
+            addAdSet, toggleAdSetStatus, deleteAdSet,
+            addLead, updateLead, deleteLead, moveLeadStage
+        }}>
             {children}
         </AppContext.Provider>
     );
