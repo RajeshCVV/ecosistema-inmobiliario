@@ -7,22 +7,59 @@ import BrandStructure from './components/BrandStructure';
 import ProjectsView from './components/ProjectsView';
 import MetaAdsManager from './components/MetaAdsManager';
 import CRMBoard from './components/CRMBoard';
+import ContentPlanner from './components/ContentPlanner';
+import AnalyticsView from './components/AnalyticsView';
 
 const AppLayout = () => {
-  const { data, activeCompanyId, switchCompany } = useContext(AppContext);
+  const { data, activeCompanyId, switchCompany, loading, addCompany } = useContext(AppContext);
 
   // Estado de Pestaña Local
   const [activeSection, setActiveSection] = useState('inicio');
 
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50">
+        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-6 shadow-xl"></div>
+        <h2 className="text-2xl font-extrabold text-gray-900">Sincronizando con Servidor MongoDB...</h2>
+        <p className="text-gray-500 mt-2">Cargando módulos de Marketing Growth OS</p>
+      </div>
+    );
+  }
+
   const company = data.companies.find(c => c.id === activeCompanyId) || data.companies[0];
-  const branding = company.branding;
+
+  // SI LA BASE DE DATOS MONGODB ESTÁ NUEVA / VACÍA
+  if (!company) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="bg-white p-12 rounded-3xl shadow-sm border border-gray-100 max-w-lg text-center">
+          <span className="text-6xl mb-6 block">🌍</span>
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Bienvenido al Growth OS</h2>
+          <p className="text-gray-500 mb-8 font-medium">Hemos conectado exitosamente con tu clúster de MongoDB. Para arrancar el motor, necesitas crear tu primera Empresa (Ej. Fortis / Crescendo).</p>
+          <button
+            onClick={() => {
+              const name = prompt("Introduce el Nombre de la Marca:");
+              if (name) addCompany({ name }); // Usamos la función recién mapeada al backend
+            }}
+            className="px-8 py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg hover:shadow-xl w-full"
+          >
+            + Crear Ecosistema Estructural
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const branding = company.branding || {};
 
   const sections = [
     { id: 'inicio', label: 'Dashboard', icon: '🏠' },
     { id: 'marca', label: 'Estruct. de Marca', icon: '💎' },
     { id: 'proyectos', label: 'Proyectos', icon: '🏗️' },
     { id: 'ads', label: 'Ads Manager', icon: '💻' },
-    { id: 'crm', label: 'CRM Ventas', icon: '👥' }
+    { id: 'planner', label: 'Content Planner', icon: '📆' },
+    { id: 'crm', label: 'CRM Ventas', icon: '👥' },
+    { id: 'analytics', label: 'Métricas ROI', icon: '📈' }
   ];
 
   return (
@@ -84,9 +121,10 @@ const AppLayout = () => {
           {activeSection === 'inicio' && <DashboardOverview />}
           {activeSection === 'marca' && <BrandStructure />}
           {activeSection === 'proyectos' && <ProjectsView />}
-          {/* Al MetaAds y al CRM los instanciamos para la vista Global de Empresa */}
           {activeSection === 'ads' && <MetaAdsManager project={{ campanasMeta: { reconocimiento: [], trafico: [], clientesPotenciales: [] } }} isGlobal={true} />}
+          {activeSection === 'planner' && <ContentPlanner />}
           {activeSection === 'crm' && <CRMBoard project={null} />}
+          {activeSection === 'analytics' && <AnalyticsView />}
         </div>
       </main>
     </div>
