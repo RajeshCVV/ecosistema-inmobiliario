@@ -9,19 +9,36 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Variables globales para estado de DB
-app.locals.dbConnected = false;
+let isDbConnected = false;
+let dbConnectPromise = null;
 
-// Conexión a MongoDB (con manejo de error para permitir fallback a memoria en desarrollo)
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/real-estate-ecosystem')
-    .then(() => {
-        console.log('✅ MongoDB Conectado');
-        app.locals.dbConnected = true;
-    })
-    .catch(err => {
-        console.log('⚠️ No se pudo conectar a MongoDB. Usando fallback en memoria para desarrollo.');
-        console.log('Error:', err.message);
-    });
+const connectDB = async () => {
+    if (isDbConnected) return;
+    if (!process.env.MONGO_URI) {
+        console.log('⚠️ No hay MONGO_URI, usando fallback.');
+        return;
+    }
+    if (!dbConnectPromise) {
+        dbConnectPromise = mongoose.connect(process.env.MONGO_URI);
+    }
+    await dbConnectPromise;
+    isDbConnected = true;
+    console.log('✅ MongoDB Conectado (Serverless)');
+};
+
+// Middleware para asegurar conexión a DB en Serverless
+app.use(async (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        try {
+            await connectDB();
+            req.app.locals.dbConnected = isDbConnected;
+        } catch (error) {
+            console.error('Error DB:', error);
+            req.app.locals.dbConnected = false;
+        }
+    }
+    next();
+});
 
 // Importar y usar rutas
 const apiRoutes = require('./routes/api');
