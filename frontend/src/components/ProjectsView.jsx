@@ -195,7 +195,10 @@ const ProjectsView = () => {
                             </div>
                             <div className="pt-4 flex space-x-3">
                                 <button type="button" onClick={() => setIsAddingProject(false)} className="flex-1 px-4 py-3 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition-colors">Cancelar</button>
-                                <button type="submit" className="flex-1 px-4 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-bold shadow-lg transition-all" style={{ backgroundColor: company.branding.primaryColor }}>Desplegar Proyecto</button>
+                                <button type="submit" className="flex-1 px-4 py-3 text-white bg-blue-600 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group" style={{ backgroundColor: company.branding.primaryColor || '#2563EB' }}>
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                                    <span className="relative drop-shadow-md">Desplegar Proyecto</span>
+                                </button>
                             </div>
                         </form>
                     </div>

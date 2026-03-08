@@ -137,8 +137,9 @@ const BrandStructure = () => {
                 {/* Save Block */}
                 {isEditing && (
                     <div className="mt-8 pl-4 flex gap-4 border-t border-gray-100 pt-6">
-                        <button onClick={handleSave} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg" style={{ backgroundColor: company.branding.primaryColor }}>
-                            Guardar Cambios
+                        <button onClick={handleSave} className="px-8 py-3 bg-blue-600 border border-transparent text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 relative overflow-hidden group" style={{ backgroundColor: company.branding.primaryColor || '#2563EB' }}>
+                            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                            <span className="relative drop-shadow-md">Guardar Cambios</span>
                         </button>
                         <button onClick={() => { setIsEditing(false); setBrandForm(company.branding); }} className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition">
                             Cancelar

@@ -39,11 +39,11 @@ const AppLayout = () => {
           <button
             onClick={() => {
               const name = prompt("Introduce el Nombre de la Marca:");
-              if (name) addCompany({ name }); // Usamos la función recién mapeada al backend
+              if (name) addCompany({ name });
             }}
-            className="px-8 py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg hover:shadow-xl w-full"
+            className="px-8 py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 w-full flex items-center justify-center border border-gray-800"
           >
-            + Crear Ecosistema Estructural
+            <span className="text-xl mr-3">🚀</span> Iniciar Nuevo Ecosistema
           </button>
         </div>
       </div>
@@ -70,13 +70,15 @@ const AppLayout = () => {
         <div className="p-6 border-b border-gray-800">
           <h2 className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">Ecosistema Activo</h2>
           <select
-            className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 font-bold cursor-pointer transition-colors"
+            className="w-full bg-gray-900/50 text-white border border-gray-700/50 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500 font-bold cursor-pointer transition-all hover:bg-gray-800 shadow-inner"
             value={activeCompanyId}
             onChange={(e) => switchCompany(e.target.value)}
-            style={{ borderLeft: `4px solid ${branding.primaryColor}` }}
+            style={{ borderLeft: `4px solid ${branding.primaryColor || '#3B82F6'}` }}
           >
             {data.companies.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id} className="bg-gray-900 text-white font-medium py-2">
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
