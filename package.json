@@ -2,6 +2,7 @@
     "name": "ecosistema-inmobiliario-root",
     "version": "1.0.0",
     "description": "Sistema Ecosistema Inmobiliario - SPA Root Package",
+    "type": "module",
     "scripts": {
         "dev": "cd frontend && npm run dev",
         "build": "cd frontend && npm install && npm run build",
