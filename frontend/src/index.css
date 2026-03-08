@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #111827;
+  /* Dark grayish blue - very elegant */
+  --color-accent: #c0a062;
+  /* Soft Gold - Boutique feel */
+}
+
+@layer base {
+  body {
+    @apply bg-brandLight text-brandDark font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight text-brandDark;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-xl rounded-2xl;
+  }
+
+  .btn-primary {
+    @apply bg-company text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:bg-black hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply border-2 border-brandDark text-brandDark px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:bg-brandDark hover:text-white;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all;
+  }
+}
+
+/* Micro animations */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
