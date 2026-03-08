@@ -10,6 +10,23 @@ export const AppProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [activeCompanyId, setActiveCompanyId] = useState(null);
 
+    // Función auxiliar para parseo seguro de JSON (previene caídas por Vercel SSO u otros HTML de error)
+    const fetchJsonSafe = async (url) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) return { data: [] };
+
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return await response.json();
+            }
+            return { data: [] }; // Si Vercel devuelve un portal HTML (SSO), evitamos el 'Unexpected token <'
+        } catch (error) {
+            console.warn(`Error de red al consultar ${url}:`, error);
+            return { data: [] };
+        }
+    };
+
     // ==========================================
     // 1. CARGA INICIAL DESDE MONGODB
     // ==========================================
@@ -17,11 +34,11 @@ export const AppProvider = ({ children }) => {
         setLoading(true);
         try {
             const [compRes, projRes, adsRes, leadsRes, plannerRes] = await Promise.all([
-                fetch(`${API_URL}/companies`).then(r => r.json()),
-                fetch(`${API_URL}/projects`).then(r => r.json()),
-                fetch(`${API_URL}/meta-ads`).then(r => r.json()),
-                fetch(`${API_URL}/crm`).then(r => r.json()),
-                fetch(`${API_URL}/planner`).then(r => r.json())
+                fetchJsonSafe(`${API_URL}/companies`),
+                fetchJsonSafe(`${API_URL}/projects`),
+                fetchJsonSafe(`${API_URL}/meta-ads`),
+                fetchJsonSafe(`${API_URL}/crm`),
+                fetchJsonSafe(`${API_URL}/planner`)
             ]);
 
             const dbCompanies = compRes.data || [];
