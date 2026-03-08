@@ -4,8 +4,23 @@ const api = axios.create({
     baseURL: import.meta.env.PROD ? '/api' : 'http://localhost:5000/api',
 });
 
-export const getLeads = async () => {
-    const response = await api.get('/leads');
+export const getCompanies = async () => {
+    const response = await api.get('/companies');
+    return response.data;
+};
+
+export const getProjectsByCompany = async (companyId) => {
+    const response = await api.get(`/companies/${companyId}/projects`);
+    return response.data;
+};
+
+export const getProjectById = async (projectId) => {
+    const response = await api.get(`/projects/${projectId}`);
+    return response.data;
+};
+
+export const getLeadsByProject = async (projectId) => {
+    const response = await api.get(`/projects/${projectId}/leads`);
     return response.data;
 };
 

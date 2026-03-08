@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getLeads, createLead } from '../api';
+import { getLeadsByProject, createLead } from '../api';
 import LeadFormModal from './LeadFormModal';
 
-export default function LeadManager() {
+export default function LeadManager({ projectId }) {
     const [filter, setFilter] = useState('Todos');
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -11,24 +11,28 @@ export default function LeadManager() {
     useEffect(() => {
         async function fetchLeads() {
             try {
-                const data = await getLeads();
+                // Pasamos el projectId al endpoint filtrado
+                const data = await getLeadsByProject(projectId);
                 setLeads(data);
             } catch (error) {
-                console.error("Error al obtener leads:", error);
+                console.error("Error fetching leads:", error);
             } finally {
                 setLoading(false);
             }
         }
-        fetchLeads();
-    }, []);
+        if (projectId) fetchLeads();
+    }, [projectId]);
 
     const handleCreateLead = async (leadData) => {
         try {
-            const newLead = await createLead(leadData);
+            // Inyectamos el projectId al payload antes de crear
+            const payload = { ...leadData, projectId };
+            const newLead = await createLead(payload);
             setLeads(prev => [...prev, newLead]);
+            setIsModalOpen(false);
         } catch (error) {
             console.error("Error creating lead:", error);
-            alert("Error al guardar el Lead. Revisa la consola.");
+            alert("No se pudo crear el lead. Inténtalo de nuevo.");
         }
     };
 

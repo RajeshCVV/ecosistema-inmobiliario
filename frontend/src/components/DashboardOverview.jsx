@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { getLeads, getProjects } from '../api';
+import { getLeadsByProject, getProjects } from '../api';
 
-export default function DashboardOverview() {
-    const [leads, setLeads] = useState([]);
-    const [projects, setProjects] = useState([]);
+export default function DashboardOverview({ projectId }) {
+    const [totalLeads, setTotalLeads] = useState(0);
+    const [projects, setProjects] = useState([]); // Keep projects state for now, as its removal wasn't fully specified
 
     useEffect(() => {
-        getLeads().then(setLeads).catch(console.error);
+        async function loadMetrics() {
+            try {
+                if (projectId) {
+                    const leads = await getLeadsByProject(projectId);
+                    setTotalLeads(leads.length);
+                }
+            } catch (err) {
+                console.error("Error fetching leads by project:", err);
+            }
+        }
+        loadMetrics();
+    }, [projectId]);
+
+    // Keep getProjects call if the projects state is still used
+    useEffect(() => {
         getProjects().then(setProjects).catch(console.error);
     }, []);
 
@@ -14,7 +28,7 @@ export default function DashboardOverview() {
         <div className="space-y-6 animate-slide-up opacity-0" style={{ animationFillMode: 'forwards' }}>
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total de Leads" value={leads.length || '...'} trend="Dato en vivo DB" />
+                <StatCard title="Total de Leads" value={totalLeads.toString()} trend="Dato en vivo DB" />
                 <StatCard title="Proyectos Activos" value={projects.length || '...'} subtitle="Boulevard El Parque" />
                 <StatCard title="Tasa de Conversión" value="4.2%" trend="+0.5% (Inv.)" />
             </div>

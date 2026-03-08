@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function MarketingPlan() {
+export default function MarketingPlan({ projectId }) {
     const pillars = [
         { id: 1, title: 'Urbanismo', desc: 'Desarrollo de las vías y áreas comerciales', icon: '🏙️' },
         { id: 2, title: 'Crecimiento de Zonas', desc: 'Jamundí como foco de inversión local', icon: '📈' },

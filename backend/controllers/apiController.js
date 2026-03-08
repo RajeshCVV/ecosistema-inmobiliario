@@ -1,5 +1,6 @@
 const Lead = require('../models/Lead');
 const Project = require('../models/Project');
+const Company = require('../models/Company');
 
 // Temporales en memoria por si no hay MongoDB local
 let memoryLeads = [
@@ -20,13 +21,38 @@ let memoryProjects = [
     }
 ];
 
-exports.getLeads = async (req, res) => {
+exports.getCompanies = async (req, res) => {
     try {
         if (req.app.locals.dbConnected) {
-            const leads = await Lead.find();
+            const companies = await Company.find();
+            return res.json(companies);
+        }
+        res.json([]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getLeadsByCompany = async (req, res) => {
+    try {
+        if (req.app.locals.dbConnected) {
+            const leads = await Lead.find({ companyId: req.params.companyId });
             return res.json(leads);
         }
         res.json(memoryLeads);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getLeadsByProject = async (req, res) => {
+    try {
+        if (req.app.locals.dbConnected) {
+            const leads = await Lead.find({ projectId: req.params.projectId });
+            return res.json(leads);
+        }
+        // Fallback filter
+        res.json(memoryLeads.filter(l => l.projectId === req.params.projectId));
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -49,10 +75,25 @@ exports.createLead = async (req, res) => {
     }
 };
 
-exports.getProjects = async (req, res) => {
+exports.getProjectById = async (req, res) => {
     try {
         if (req.app.locals.dbConnected) {
-            const projects = await Project.find();
+            const project = await Project.findById(req.params.projectId);
+            if (!project) return res.status(404).json({ error: 'Project not found' });
+            return res.json(project);
+        }
+        const project = memoryProjects.find(p => p._id === req.params.projectId);
+        if (!project) return res.status(404).json({ error: 'Project not found' });
+        res.json(project);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getProjectsByCompany = async (req, res) => {
+    try {
+        if (req.app.locals.dbConnected) {
+            const projects = await Project.find({ companyId: req.params.companyId });
             return res.json(projects);
         }
         res.json(memoryProjects);

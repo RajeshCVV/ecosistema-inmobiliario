@@ -1,41 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { getProjects, addMilestone } from '../api';
+import { getProjectById, addMilestone } from '../api';
 import MilestoneFormModal from './MilestoneFormModal';
 
-export default function ProjectScope() {
-    const [projects, setProjects] = useState([]);
+export default function ProjectScope({ projectId }) {
+    // Como ahora ProjectScope está dentro de ProjectDashboard, 
+    // lo ideal sería recibir el objeto project entero o refetchearlo por ID si tuviéramos ese endpoint. 
+    // Para no complicarlo, dejaremos que maneje sus propios hitos locales o simularemos el refetch buscando entre los proyectos de la compañía (requiere prop drilling o context). 
+    // ASUMIMOS: Vamos a requerir que DashboardOverview le pase los hitos o refetch.
+    // Para hacerlo rápido y aislado: agreguemos un endpoint getProjectById en api.js y acá.
+    const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     useEffect(() => {
-        async function fetchProjects() {
+        async function fetchProject() {
             try {
-                const data = await getProjects();
-                setProjects(data);
+                const data = await getProjectById(projectId);
+                setProject(data);
             } catch (error) {
-                console.error("Error fetching projects:", error);
+                console.error("Error fetching project setup:", error);
             } finally {
                 setLoading(false);
             }
         }
-        fetchProjects();
-    }, []);
+        if (projectId) fetchProject();
+    }, [projectId]);
 
     const handleAddMilestone = async (milestoneData) => {
-        if (!projects.length) return alert("No hay proyectos activos para añadir hitos.");
-        const currentProject = projects[0];
+        if (!project) return alert("Error cargando proyecto activo.");
 
         try {
-            const updatedProject = await addMilestone(currentProject._id, milestoneData);
-            // Actualizar localmente
-            setProjects(prev => prev.map(p => p._id === updatedProject._id ? updatedProject : p));
+            const updatedProject = await addMilestone(project._id, milestoneData);
+            setProject(updatedProject);
         } catch (error) {
             console.error("Error saving milestone:", error);
             alert("Hubo un error al guardar el hito.");
         }
     };
 
-    const currentProject = projects.length > 0 ? projects[0] : null;
-    const milestones = currentProject?.milestones || [];
+    const milestones = project?.milestones || [];
 
     return (
         <div className="space-y-6 animate-slide-up opacity-0" style={{ animationFillMode: 'forwards' }}>
@@ -102,7 +105,7 @@ export default function ProjectScope() {
                             </div>
                             <div>
                                 <label className="text-xs text-gray-400 uppercase tracking-wider font-bold">Progreso Global</label>
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-2" title="Simulación visual">
                                     <div className="bg-accent h-2 rounded-full" style={{ width: '40%' }}></div>
                                 </div>
                                 <p className="text-xs text-right mt-1 font-semibold text-gray-500">40% Completado</p>
