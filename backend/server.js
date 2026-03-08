@@ -9,26 +9,41 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-let isDbConnected = false;
-let dbConnectPromise = null;
+// --- Mongoose Serverless Connection ---
+let cached = global.mongoose;
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
+}
 
 const Company = require('./models/Company');
 
 const connectDB = async () => {
-    if (isDbConnected) return;
-    if (!process.env.MONGO_URI) {
-        console.log('⚠️ No hay MONGO_URI, usando fallback.');
-        return;
+    if (cached.conn) {
+        return cached.conn;
     }
-    if (!dbConnectPromise) {
-        dbConnectPromise = mongoose.connect(process.env.MONGO_URI);
-    }
-    await dbConnectPromise;
-    isDbConnected = true;
-    console.log('✅ MongoDB Conectado (Serverless)');
 
-    // Seed initial companies and projects
+    if (!process.env.MONGO_URI) {
+        console.error('⚠️ CRITICAL: MONGO_URI is missing from environment variables.');
+        return null;
+    }
+
+    if (!cached.promise) {
+        const opts = {
+            bufferCommands: false,
+        };
+        cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
+            console.log('✅ MongoDB Conectado (Serverless Vercel)');
+            return mongoose;
+        }).catch(err => {
+            console.error('❌ Mongoose connect error:', err);
+            throw err;
+        });
+    }
+
     try {
+        cached.conn = await cached.promise;
+
+        // Seed initial companies
         const crescendo = await Company.findOne({ slug: 'crescendo' });
         let crescendoId = null;
         if (!crescendo) {
@@ -48,7 +63,7 @@ const connectDB = async () => {
             await Company.create({
                 name: 'Fortress',
                 slug: 'fortress',
-                branding: { logoUrl: '', primaryColor: '#1a1a1a', secondaryColor: '#d4af37' } // Negro y dorado
+                branding: { logoUrl: '', primaryColor: '#1a1a1a', secondaryColor: '#d4af37' }
             });
             console.log('🌱 Seed: Empresa "Fortress" creada.');
         }
@@ -68,7 +83,6 @@ const connectDB = async () => {
             });
             console.log('🌱 Seed: Proyecto "Boulevard El Parque" creado.');
 
-            // Seed Lead para ese proyecto
             const Lead = require('./models/Lead');
             await Lead.create({
                 companyId: crescendoId,
@@ -81,10 +95,12 @@ const connectDB = async () => {
             });
             console.log('🌱 Seed: Lead de Demo Creado.');
         }
+        return cached.conn;
 
-
-    } catch (err) {
-        console.error('Error sembrando empresas:', err.message);
+    } catch (e) {
+        cached.promise = null;
+        console.error('Error sembrando empresas o conectando DB:', e.message);
+        throw e;
     }
 };
 
@@ -93,9 +109,8 @@ app.use(async (req, res, next) => {
     if (req.path.startsWith('/api')) {
         try {
             await connectDB();
-            req.app.locals.dbConnected = isDbConnected;
+            req.app.locals.dbConnected = true;
         } catch (error) {
-            console.error('Error DB:', error);
             req.app.locals.dbConnected = false;
         }
     }
