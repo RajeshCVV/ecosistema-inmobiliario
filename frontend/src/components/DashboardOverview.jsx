@@ -1,103 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import { getLeadsByProject, getProjects } from '../api';
+import React, { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
-export default function DashboardOverview({ projectId }) {
-    const [totalLeads, setTotalLeads] = useState(0);
-    const [projects, setProjects] = useState([]); // Keep projects state for now, as its removal wasn't fully specified
+const DashboardOverview = () => {
+    const { data, activeCompanyId } = useContext(AppContext);
 
-    useEffect(() => {
-        async function loadMetrics() {
-            try {
-                if (projectId) {
-                    const leads = await getLeadsByProject(projectId);
-                    setTotalLeads(leads.length);
-                }
-            } catch (err) {
-                console.error("Error fetching leads by project:", err);
+    // Obtenemos todos los datos pertinentes al Ecosistema seleccionado
+    const company = data.companies.find(c => c.id === activeCompanyId);
+
+    if (!company) return null;
+
+    const projects = company.projects || [];
+    const activeProjects = projects.filter(p => p.status === 'abiertos' || p.status === 'en_curso').length;
+
+    // Cálculos de Leads asociados a proyectos de esta empresa
+    const companyProjectIds = projects.map(p => p.id);
+    const companyLeads = data.leads.filter(lead => companyProjectIds.includes(lead.projectId));
+    const newLeads = companyLeads.filter(l => l.stage === 'nuevo').length;
+    const closedLeads = companyLeads.filter(l => l.stage === 'cierre').length;
+
+    // Calcular cuántas Campañas Activas hay en todos los proyectos de la empresa
+    let activeAds = 0;
+    projects.forEach(p => {
+        ['reconocimiento', 'trafico', 'clientesPotenciales'].forEach(stage => {
+            if (p.campanasMeta && p.campanasMeta[stage]) {
+                activeAds += p.campanasMeta[stage].filter(ad => ad.status === 'activa').length;
             }
-        }
-        loadMetrics();
-    }, [projectId]);
-
-    // Keep getProjects call if the projects state is still used
-    useEffect(() => {
-        getProjects().then(setProjects).catch(console.error);
-    }, []);
+        });
+    });
 
     return (
-        <div className="space-y-6 animate-slide-up opacity-0" style={{ animationFillMode: 'forwards' }}>
-            {/* Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total de Leads" value={totalLeads.toString()} trend="Dato en vivo DB" />
-                <StatCard title="Proyectos Activos" value={projects.length || '...'} subtitle="Boulevard El Parque" />
-                <StatCard title="Tasa de Conversión" value="4.2%" trend="+0.5% (Inv.)" />
-            </div>
+        <div className="animate-fade-in space-y-6">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Visión Estratégica</h2>
 
-            {/* Recent Activity & Charts Placeholder */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 glass-card p-6 min-h-[400px]">
-                    <h3 className="text-lg font-semibold mb-4 text-brandDark">Hitos del Proyecto</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg hover:border-accent transition-colors">
-                            <div className="w-3 h-3 rounded-full bg-accent"></div>
-                            <div className="flex-1">
-                                <p className="font-medium text-brandDark">Lanzamiento Campaña Meta Ads</p>
-                                <p className="text-sm text-gray-500">Boulevard - Reconocimiento</p>
-                            </div>
-                            <span className="text-sm font-semibold text-accent">En Proceso</span>
-                        </div>
-                        <div className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg hover:border-accent transition-colors opacity-60">
-                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                            <div className="flex-1">
-                                <p className="font-medium text-brandDark line-through">Definición de Público Objetivo</p>
-                                <p className="text-sm text-gray-500">Boulevard - Planeación</p>
-                            </div>
-                            <span className="text-sm font-semibold text-green-600">Completado</span>
-                        </div>
+            {/* Tarjetas de Métricas Principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                {/* Dashboard Card: Proyectos */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
+                    <div className="p-4 bg-blue-50 text-blue-600 rounded-xl text-2xl">🏗️</div>
+                    <div>
+                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Proyectos Activos</p>
+                        <p className="text-3xl font-extrabold text-gray-900">{activeProjects}</p>
                     </div>
                 </div>
-                <div className="glass-card p-6">
-                    <h3 className="text-lg font-semibold mb-4 text-brandDark">Nuevos Leads</h3>
-                    <ul className="space-y-3">
-                        <li className="flex justify-between items-center bg-gray-50 p-3 rounded hover-lift cursor-pointer border border-transparent hover:border-accent/30">
-                            <div>
-                                <p className="font-medium text-sm text-brandDark">Carlos Inversor</p>
-                                <p className="text-xs text-gray-500">Perfil: Inversionista</p>
-                            </div>
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Nuevo</span>
-                        </li>
-                        <li className="flex justify-between items-center bg-gray-50 p-3 rounded hover-lift cursor-pointer border border-transparent hover:border-accent/30">
-                            <div>
-                                <p className="font-medium text-sm text-brandDark">María Comerciante</p>
-                                <p className="text-xs text-gray-500">Perfil: Comerciante</p>
-                            </div>
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Contactado</span>
-                        </li>
-                        <li className="flex justify-between items-center bg-gray-50 p-3 rounded hover-lift cursor-pointer border border-transparent hover:border-accent/30">
-                            <div>
-                                <p className="font-medium text-sm text-brandDark">Andrés Franquicia</p>
-                                <p className="text-xs text-gray-500">Perfil: Comerciante</p>
-                            </div>
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">En Negociación</span>
-                        </li>
-                    </ul>
+
+                {/* Dashboard Card: Leads Nuevos */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
+                    <div className="p-4 bg-yellow-50 text-yellow-600 rounded-xl text-2xl">🔥</div>
+                    <div>
+                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Prospectos Nuevos</p>
+                        <p className="text-3xl font-extrabold text-gray-900">{newLeads}</p>
+                        <p className="text-xs text-gray-400 mt-1">Sin contactar a la fecha</p>
+                    </div>
+                </div>
+
+                {/* Dashboard Card: Cierres */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
+                    <div className="p-4 bg-green-50 text-green-600 rounded-xl text-2xl">💰</div>
+                    <div>
+                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Cierres Exitosos</p>
+                        <p className="text-3xl font-extrabold text-gray-900">{closedLeads}</p>
+                    </div>
+                </div>
+
+                {/* Dashboard Card: Campañas */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
+                    <div className="p-4 bg-purple-50 text-purple-600 rounded-xl text-2xl">💻</div>
+                    <div>
+                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Campañas Meta</p>
+                        <p className="text-3xl font-extrabold text-gray-900">{activeAds}</p>
+                        <p className="text-xs text-gray-400 mt-1">En Circulación Activa</p>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* Resumen de Estructura Comercial Rápida */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mt-8 relative overflow-hidden group">
+                {/* Accent line */}
+                <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: company.branding.primaryColor }}></div>
+
+                <h3 className="text-xl font-bold text-gray-800 mb-6">Nicho Actual del Ecosistema</h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h4 className="text-sm uppercase tracking-widest font-bold text-gray-400 mb-3">Qué Vendemos</h4>
+                        <p className="text-gray-800 font-medium">{company.branding.queVende}</p>
+                    </div>
+
+                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h4 className="text-sm uppercase tracking-widest font-bold text-gray-400 mb-3">Diferenciador</h4>
+                        <p className="text-gray-800 font-medium">{company.branding.diferenciador}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-}
 
-function StatCard({ title, value, trend, subtitle }) {
-    return (
-        <div className="glass-card p-6 flex flex-col justify-between hover-lift border-b-4 border-b-transparent hover:border-b-accent transition-all duration-300">
-            <div>
-                <p className="text-gray-500 text-sm font-medium uppercase tracking-wider">{title}</p>
-                <h3 className="text-4xl font-display font-bold mt-2 text-company">{value}</h3>
-            </div>
-            <div className="mt-4">
-                {trend && <p className="text-sm text-green-600 font-medium flex items-center gap-1">↑ {trend}</p>}
-                {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
-            </div>
         </div>
     );
-}
+};
+
+export default DashboardOverview;

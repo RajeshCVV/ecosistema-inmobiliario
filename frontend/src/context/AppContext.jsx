@@ -105,16 +105,31 @@ const initialState = {
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    // Inicializar desde LocalStorage o usar el estado semilla (Forzamos reset temporal para asimilar nueva BD)
+    // Inicializar desde LocalStorage o usar el estado semilla (Para asimilar BD V2 y V3)
     const [data, setData] = useState(() => {
-        // En Producción V2, si ya hay datos de v2, mantenerlos. Si no, usar initialState.
         const localData = localStorage.getItem('v2_growth_os_data');
         return localData ? JSON.parse(localData) : initialState;
+    });
+
+    // Nuevo Estado Global para el Dashboard Layout V3 (Qué empresa se está visualizando ahora)
+    const [activeCompanyId, setActiveCompanyId] = useState(() => {
+        const localData = localStorage.getItem('v2_growth_os_data');
+        // Por defecto, carga Creciendo (o la primera empresa si no está)
+        if (localData) {
+            const parsed = JSON.parse(localData);
+            return parsed.companies.find(c => c.id === 'creciendo')?.id || parsed.companies[0]?.id;
+        }
+        return 'creciendo';
     });
 
     useEffect(() => {
         localStorage.setItem('v2_growth_os_data', JSON.stringify(data));
     }, [data]);
+
+    // Función para intercambiar el entorno del Dashboard desde el Menú Lateral
+    const switchCompany = (companyId) => {
+        setActiveCompanyId(companyId);
+    };
 
     // ==========================================
     // CRUD: COMPANIES
@@ -300,6 +315,7 @@ export const AppProvider = ({ children }) => {
     return (
         <AppContext.Provider value={{
             data,
+            activeCompanyId, switchCompany, // Nuevos Exportados V3
             addCompany, updateCompany, deleteCompany, updateBrandingArray,
             addProject, updateProject, deleteProject,
             addAdSet, toggleAdSetStatus, deleteAdSet,
